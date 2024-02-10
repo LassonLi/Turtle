@@ -1,0 +1,28 @@
+Firstly, I interhit the code from Interp/interp.c
+
+
+Secondly, I add three grammar 
+<BWD>   which means backward, just the opposite of FWD
+<LGT>    which means turn left, just the opposite of RGT
+<RESET>    which means make the board become null again, then jump to the middle of the borad
+
+find the detail grammar in Extension/grammar.txt
+
+
+Thirdly, I use SDL to draw the picture in terminal instead of neillsimplescreen
+Run the following command, you can see what draw in SDL
+
+Go to the directory of Turtle
+
+1.In terminal run: make extension_s
+In Makefile, because it need to use SDL, so it need to use pkg-config sdl2 --libs
+
+2.In terminal run ./extension_s ./TTLs/forward.ttl
+
+3.In terminal run ./extension_s ./TTLs/tunnel.ttl
+
+4.In terminal run ./extension_s ./Extension/backward.ttl
+
+5.In terminal run ./extension_s ./Extension/leftturn.ttl
+
+6.In terminal run ./extension_s ./Extension/reset.ttl

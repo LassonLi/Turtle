@@ -1,0 +1,20 @@
+START
+  LOOP D OVER { 4 4 4 4 }
+    LOOP C OVER { 90 }
+      LOOP E OVER { "RED" }
+        COLOUR $E
+        FORWARD $D
+        RIGHT $C
+      END
+    END
+  END
+  LOOP D OVER { 8 8 8 8 }
+    LOOP C OVER { 90 }
+      LOOP E OVER { "GREEN" }
+        COLOUR $E
+        FORWARD $D
+        RIGHT $C
+      END
+    END
+  END
+END

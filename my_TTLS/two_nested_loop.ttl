@@ -1,0 +1,8 @@
+START
+  LOOP D OVER { 4 4 4 4 }
+    LOOP C OVER { 90 }
+      FORWARD $D
+      RIGHT $C
+    END
+  END
+END

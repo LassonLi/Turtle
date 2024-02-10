@@ -1,0 +1,121 @@
+The whole testing process could be divided into three parts, how to test Parse , Interp, Extension
+
+The main idea: Firstly, I will first test every own function using assert in interp.c or parse.c
+Secondly(most important), I will use black box test to compare whether the out_xxx.txt files from interp.c are the same with Results/out_xxx.txt
+Lastly, I will tell you some problems I have encounterd and how did I fix it.
+
+-------------------------------------------
+
+Part One: Parse
+
+
+Firstly: Individual function testing. Use assert().
+I simply write a function void test() in Parse/parse.c to test every function.You can find the detail in parse.c.
+After I ensure every function can output what I expect,
+I use // to comment test() in line 7 so that I don't need to run test() when process the .ttl file.
+when you want to test, You can comment out the line 7 code
+
+
+Secondly: black box test
+1.Go to the directory of Turtle
+
+2.In terminal run : make run_parse_s
+(It would test all .ttl file except fail_parse_ok_interp.ttl, No mistakes would occur)
+
+3.In terminal run: ./parse_s ./TTLS/fail_parse_ok_interp.ttl
+(It would encounter an error which means parse.c is correct)
+
+4.In terminal run: ./parse_s ./my_TTLS/single_quote_example.ttl
+(It would encounter an error since " in LST which means parse.c is correct)
+
+Thirdly: Problem that I cncountered and the process of how to fix it
+1.if LST == ["RED" "BLUE" BLACK GREEN], my first version of code would parse it successfully. 
+Solution: Then I use sscanf(p->wds[p->cw], "\"%s\"", w) == 1 to make sure it needs to have double quote.
+
+2.Some problems with VAR=$LTR and LTR. 
+For example LTR = "A"; VAR =  "$A". It is not easy to deal with those two together 
+because "A" is not single character but a string.
+Solution: I process VAR and LTR separately which means I don't call LTR function when process VAR function. 
+
+-------------------------------------------
+
+Part Two: Interp
+
+
+Firstly: Individual function testing. Use assert()
+I simply write a function void test() in Interp/interp.c to test every function except print_to_txt , print_to_terminal. 
+You can find the detail in Interp/interp.c
+For print_to_txt, I will test it in black box test. 
+For print_to_terminal, it is difficult to check whether it is correct on terminal. So I have to look at the terminal to see whether it is correct or not
+For every assert(), I will test the middle variable value as you can see in test().
+After I ensure every function can output what I expect,
+I use // to comment test() in line 8 so that I don't need to run it when interp all .ttl files.
+when you want to test, You can comment out the line 8 code
+
+
+Secondly: black box test(very important)
+Idea: compare the first 33 rows and 51 columns of Results/out_xxx.txt files and ./out_xxx.txt files
+Note, Results/out_xxx.txt files are provided by Neill github; ./out_xxx.txt files are produced by Interp/interp.c
+
+1.Go to the directory of Turtle
+
+3.In terminal run: make run_compare_s
+(just to output ./out_xxx.txt files, then compare the files)
+
+
+Thirdly: Problem that I cncountered and the process of how to fix it
+1.For TTLS/fail_parse_ok_interp.ttl
+Since I don't use a stack to process LOOP, therefore when I meet a empty LOOP {}, I will fail.
+Solution: I make a function to find the next END if I meet a empty LOOP, then jump to this END
+
+2.In the SET function
+It's very difficult to do calculation especially meet SET A (1 2 + 3 *)
+solution: Use a stack for calculation. Also set clear rules about when to push or pop from stack
+
+3.In the LOOP function
+When it comes to colour loop nested figure loop, I couldn't do the job correctly
+solution: use loop_col_or_figure to mark down it's in a colour loop or figure loop
+reset p->cw and loop_col_or_figure everytime in a loop. 
+Also, I add some .ttl files in the directory my_TTLS/
+These .ttl files are used to test three nested loop or more.
+
+In terminal run: ./interp_s my_TTLS/two_nested_loop_sequence_loop.ttl 
+
+4.In the draw_line function
+It's difficult to update the 2d array integer coords correctly.
+solution: Use brsentham algorithm which aims to update integer coords
+
+5.In the print_to_terminal function
+Initially, I don't know how to print a borad repeatly in the same position using neillsimplescreen.
+solution: prompt gpt4. "I want to print the character in exact row and col"
+then get, printf("\033[%d;%dH", row, col);
+
+-------------------------------------------
+
+Part three: Extension
+
+Firstly: Individual function testing. Use assert()
+I simply write a function void test() in Extension/extension.c to test 
+three new functions LGT, BWD, RESET
+You can find the detail in Extension/extension.c
+After I ensure every function can output what I expect,
+I use // to comment test() in line 7 so that I don't need to run it when extension all .ttl files.
+when you want to test, You can comment out the line 7 code
+
+Secondly: black box test
+idea: I only need to verify whether the file could be draw in SDL
+
+1.Go to the directory of Turtle
+
+2.In terminal run : make extension_s
+
+3.In terminal run: ./extension_s ./Extension/lefturn.ttl
+(just see left turn in SDL)
+
+4.In terminal run: ./extension_s ./Extension/backward.ttl
+(just see backward in SDL)
+
+5.In terminal run: ./extension_s ./Extension/reset.ttl
+(just see reset in SDL)
+
+-------------------------------------------
